@@ -13,6 +13,7 @@ def scrape_all():
     browser = Browser('chrome', **executable_path, headless=True)
 
     news_title, news_paragraph = mars_news(browser)
+    hemisphere_image_urls = Mars_Hemisphere(browser)
 
     # Run all scraping functions and store results in a dictionary
     data = {
@@ -20,7 +21,8 @@ def scrape_all():
         "news_paragraph": news_paragraph,
         "featured_image": featured_image(browser),
         "facts": mars_facts(),
-        "last_modified": dt.datetime.now()
+        "last_modified": dt.datetime.now(),
+        "hemispheres": hemisphere_image_urls,
     }
 
     # Stop webdriver and return data
@@ -98,8 +100,47 @@ def mars_facts():
     # Convert dataframe into HTML format, add bootstrap
     return df.to_html(classes="table table-striped")
 
+def Mars_Hemispheres(browser):
+    url = 'https://data-class-mars-hemispheres.s3.amazonaws.com/Mars_Hemispheres/index.html'
+
+    browser.visit(url)
+
+    # Parse HTML with soup
+    html_hemispheres = browser.html
+    hemisphere_soup = soup(html_hemispheres, 'html.parser')
+    hemispheres = hemisphere_soup.find_all('div', class_='item')
+
+    # 2. Create a list to hold the images and titles.
+    hemisphere_image_urls = []
+
+    # 3. Write code to retrieve the image urls and titles for each hemisphere.
+
+    hemispheres_url = 'https://data-class-mars-hemispheres.s3.amazonaws.com/Mars_Hemispheres/'
+
+    # Loop through list of all hemisphere info
+    for x in hemispheres:
+
+        # Store title
+        title = x.find('h3').text
+
+        ending_img_url = x.find('a', class_='itemLink product-item')['href']
+
+        browser.visit(hemispheres_url + ending_img_url)
+
+        img_html = browser.html
+        img_soup = soup(img_html, 'html.parser')
+        img_url = hemispheres_url + \
+            img_soup.find('img', class_='wide-image')['src']
+
+        # Append to a dictionary
+        hemisphere_image_urls.append({'img_url': img_url, 'title': title})
+
+    return hemisphere_image_urls
+
+
+
 if __name__ == "__main__":
 
     # If running as script, print scraped data
     print(scrape_all())
-# %%
+
