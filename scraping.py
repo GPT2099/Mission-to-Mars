@@ -13,7 +13,7 @@ def scrape_all():
     browser = Browser('chrome', **executable_path, headless=True)
 
     news_title, news_paragraph = mars_news(browser)
-    hemisphere_image_urls = Mars_Hemisphere(browser)
+    hemisphere_image_urls = Mars_Hemispheres(browser)
 
     # Run all scraping functions and store results in a dictionary
     data = {
@@ -29,7 +29,7 @@ def scrape_all():
     browser.quit()
     return data
 
-
+#%%
 def mars_news(browser):
 
     # Scrape Mars News
@@ -57,7 +57,7 @@ def mars_news(browser):
 
     return news_title, news_p
 
-
+#%%
 def featured_image(browser):
     # Visit URL
     url = 'https://data-class-jpl-space.s3.amazonaws.com/JPL_Space/index.html'
@@ -83,7 +83,7 @@ def featured_image(browser):
     img_url = f'https://data-class-jpl-space.s3.amazonaws.com/JPL_Space/{img_url_rel}'
 
     return img_url
-
+#%%
 def mars_facts():
     # Add try/except for error handling
     try:
@@ -99,7 +99,7 @@ def mars_facts():
 
     # Convert dataframe into HTML format, add bootstrap
     return df.to_html(classes="table table-striped")
-
+#%%
 def Mars_Hemispheres(browser):
     url = 'https://data-class-mars-hemispheres.s3.amazonaws.com/Mars_Hemispheres/index.html'
 
@@ -138,9 +138,11 @@ def Mars_Hemispheres(browser):
     return hemisphere_image_urls
 
 
-
+#%%
 if __name__ == "__main__":
 
     # If running as script, print scraped data
     print(scrape_all())
 
+
+# %%
